@@ -82,7 +82,7 @@
                     "type": "string",
                     "default": false,
                     "scope": "resource",
-                    "markdownDescription": "Working directory that is used to start MyPy from.)"
+                    "markdownDescription": "Working directory that is used to start MyPy from."
                 }
             }
         }
