@@ -77,6 +77,12 @@
                     "default": false,
                     "scope": "window",
                     "markdownDescription": "Enable debug logging for the extension. (Reload the window after changing this setting.)"
+                },
+                "mypy.workingDirectory": {
+                    "type": "string",
+                    "default": false,
+                    "scope": "resource",
+                    "markdownDescription": "Working directory that is used to start MyPy from.)"
                 }
             }
         }

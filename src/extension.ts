@@ -231,18 +231,26 @@ async function runDmypy(
 		mypyArgs = [...mypyArgs, '--python-executable', activeInterpreter];
 	}
 
+	const workingDirectory = mypyConfig.get<string>('workingDirectory') ?? '';
+	const cwd = folder.fsPath + '/' + workingDirectory;
+
+	const mypyPath = mypyConfig.get<string>('mypyPath', '');
+
 	const args = [...executionArgs, ...dmypyGlobalArgs, dmypyCommand, ...dmypyCommandArgs];
 	if (mypyArgs.length > 0) {
 		args.push("--", ...mypyArgs);
 	}
 	const command = [executable, ...args].map(quote).join(" ");
-	output(`Running dmypy in folder ${folder.fsPath}\n${command}`, currentCheck);
+	output(`Running dmypy in folder ${cwd}\n${command}`, currentCheck);
 	try {
 		const result = await spawn(
 			executable,
 			args,
 			{
-				cwd: folder.fsPath,
+				cwd: cwd,
+				env: {
+					'MYPYPATH': mypyPath,
+				},
 				capture: ['stdout', 'stderr'],
 				successfulExitCodes
 			}
@@ -503,8 +511,9 @@ async function checkWorkspaceInternal(folder: vscode.Uri) {
 			// By default mypy outputs paths relative to the checked folder. If the user specifies
 			// `show_absolute_path = True` in the config file, mypy outputs absolute paths.
 			let filePath = groups.file;
+			const workingDirectory = mypyConfig.get<string>('workingDirectory', '')
 			if (!path.isAbsolute(filePath)) {
-				filePath = path.join(folder.fsPath, filePath);
+				filePath = path.join(folder.fsPath, workingDirectory, filePath);
 			}
 			const fileUri = vscode.Uri.file(filePath);
 			if (!fileDiagnostics.has(fileUri)) {
